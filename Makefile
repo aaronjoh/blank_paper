@@ -10,6 +10,8 @@ ERRSYM = $(shell grep --color='auto' -P -n '[^\x00-\x7F]' $(ALLTEXFILES) $(wildc
 
 all: $(PDFTARGETS) simpleclean
 
+noclean: $(PDFTARGETS)
+
 $(PDFTARGETS): $(TARGETS)
 	@echo 'generating pdf file: $@'
 	ps2pdf14 -dPDFSETTINGS=/prepress $< $@
@@ -18,7 +20,6 @@ $(FIGURETARGET): %.tex : $(EPSTEXFILES)
 	echo $(FIGURETARGET)
 	echo 'Figure being worked on $@'
 	sed s_unitlength]{_unitlength]{figures/_ <figures/$(@:.tex=.eps_tex) >$@
-  
 
 $(TARGETS): %.ps : %.tex $(FIGURETARGET) $(ALLTEXFILES) 
 	@echo $(TARGETS)
