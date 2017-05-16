@@ -1,0 +1,66 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{booktabs} % for toprule midrule, etc.
+\usepackage{color}
+\usepackage{ifthen}
+\usepackage{epstopdf}
+\usepackage[scriptsize]{subfigure} % use subfigures
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{bm}
+
+\usepackage{relsize}
+
+\usepackage{hyperref}
+\hypersetup{bookmarks=true,colorlinks=true,bookmarksnumbered=true,bookmarksopen=true}
+
+\usepackage{verbatim}
+\usepackage{chngcntr}
+
+\usepackage{pgfplotstable}
+%\pgfplotsset{compat=1.1}
+
+% fix citations to be IEEE style
+\def\citepunct{, }
+\def\citedash{--}
+
+% Set up FIXME Command
+\definecolor{grey50}{rgb}{0.5,0.5,0.5}
+\newcommand{\FIXME}[1][]{\textcolor{red}{\textbf{FIXME}}\ifthenelse{\equal{#1}{}}{#1}{: \textcolor{grey50}{\emph{#1}}}}
+%\newcommand{\tom}[1]{{\normalsize{\textbf{({\color{green}Tom:\ }#1)}}}}
+\newcommand{\aaron}[1]{{\normalsize{\textbf{({\color{cyan}Aaron:\ }#1)}}}}
+\newcommand{\sidd}[1]{{\normalsize{\textbf{({\color{magenta}Sidd:\ }#1)}}}}
+%
+%\newcommand{\tom}[1]{{}}
+%\newcommand{\aaron}[1]{{}}
+%\newcommand{\sidd}[1]{{}}
+
+ \newcommand{\sgn}{\operatorname{sgn}}
+
+\begin{document}
+
+\title{Paper Title}
+
+\author{Aaron~M.~Johnson %,~\IEEEmembership{Member,~IEEE,}   
+        and~Aaron~M.~Johnson %,~\IEEEmembership{Member,~IEEE}%
+\thanks{Mechanical Engineering Department, Carnegie Mellon University, Pittsburgh, PA, USA email:\{amj1,amj1\}@andrew.cmu.edu.}%
+%\thanks{Manuscript received \FIXME; revised \FIXME.}%
+}
+
+\maketitle
+\input{0-abstract}
+%\bodymatter
+\IEEEpeerreviewmaketitle
+
+\input{1-introduction}
+\input{2-body}
+\input{3-body}
+\input{6-conclusion}
+\input{7-acknowledgments}
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,paper}
+%\input{9-appendix}
+\end{document}
+
+

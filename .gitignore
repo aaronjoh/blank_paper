@@ -1,0 +1,12 @@
+syntax: glob
+
+*~
+.~*
+*.log
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.out
+*.synctex.gz
+*.orig
