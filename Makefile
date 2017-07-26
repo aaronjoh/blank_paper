@@ -3,6 +3,7 @@ EPSTEXFILES = $(wildcard figures/*.eps_tex)
 FIGURETEXFILESTMP = $(EPSTEXFILES:.eps_tex=.tex)
 FIGURETARGET = $(FIGURETEXFILESTMP:figures/%=%)
 ALLTEXFILES = $(wildcard *.tex) #*.bib
+TMPALLTEXFILES = $(ALLTEXFILES:%=_%)
 TARGETS = $(SOURCES:.tex=.ps)
 PDFTARGETS = $(SOURCES:.tex=.pdf)
 ERRSYM = $(shell grep --color='auto' -P -n '[^\x00-\x7F]' $(ALLTEXFILES) $(wildcard *.bib) )
@@ -38,19 +39,25 @@ clean: simpleclean
 
 check:
 	@echo 'This check will search for special characters, words, and repeated words that you may want to correct, however these may or may not be errors!'
-	@grep --color='auto' -P -n '[^\x00-\x7F]' $(ALLTEXFILES) $(wildcard *.bib) || true
-	@grep --color='auto' -P -n '\x22' $(ALLTEXFILES) || true	
-	@grep --color='auto' -n 'naive' $(ALLTEXFILES) || true
-	@grep --color='auto' -n 'will' $(ALLTEXFILES) || true
-	@grep --color='auto' -n '\b\([[:alpha:]]\+\)\b \1\b' $(ALLTEXFILES) $(wildcard *.bib) || true
+	@for srcfile in $(ALLTEXFILES); do\
+		latexpand --empty-comments --keep-includes $$srcfile > _$$srcfile 2>/dev/null;\
+	done
+	@grep --color='auto' -P -n '[^\x00-\x7F]' $(TMPALLTEXFILES) $(wildcard *.bib) || true
+	@grep --color='auto' -P -n '\x22' $(TMPALLTEXFILES) || true	
+	@grep --color='auto' -n 'naive' $(TMPALLTEXFILES) || true
+	@grep --color='auto' -n 'will' $(TMPALLTEXFILES) || true
+	@grep --color='auto' -n '\b\([[:alpha:]]\+\)\b \1\b' $(TMPALLTEXFILES) $(wildcard *.bib) || true
 	@grep --color='auto' -n -H '[pP]ages.\+[[:digit:]]-[[:digit:]]\+}' $(wildcard *.bib) || true
 	@grep --color='auto' -n -H '[vV]olume.\+[[:digit:]]-[[:digit:]]\+}' $(wildcard *.bib) || true
 	@grep --color='auto' -n -H '[nN]umber.\+[[:digit:]]-[[:digit:]]\+}' $(wildcard *.bib) || true
-	@grep --color='auto' -n -e 'e\.g\. ' -e 'e\.g\.$$' $(ALLTEXFILES) || true
-	@grep --color='auto' -n -e 'i\.e\. ' -e 'i\.e\.$$' $(ALLTEXFILES) || true
-	@grep --color='auto' -n -e 'c\.f\. ' -e 'c\.f\.$$' $(ALLTEXFILES) || true
-	@grep --color='auto' -n -e '{\\em ' -e'{ \\em ' -e '{  \\em ' -e '\\emph{ ' -e '\\emph{.* }' $(ALLTEXFILES) || true
-	@grep --color='auto' -n -e '\\textit{' $(ALLTEXFILES) || true
+	@grep --color='auto' -n -e 'e\.g\. ' -e 'e\.g\.$$' $(TMPALLTEXFILES) || true
+	@grep --color='auto' -n -e 'i\.e\. ' -e 'i\.e\.$$' $(TMPALLTEXFILES) || true
+	@grep --color='auto' -n -e 'c\.f\. ' -e 'c\.f\.$$' $(TMPALLTEXFILES) || true
+	@grep --color='auto' -n -e '{\\em ' -e'{ \\em ' -e '{  \\em ' -e '\\emph{ ' -e '\\emph{.* }' $(TMPALLTEXFILES) || true
+	@grep --color='auto' -n -e '\\textit{' $(TMPALLTEXFILES) || true
+	@for srcfile in $(ALLTEXFILES); do\
+		rm _$$srcfile;\
+	done
 
 arxiv: clean $(PDFTARGETS) arxiv_do simpleclean
 
@@ -68,4 +75,35 @@ arxiv_do:
 	@rm arxiv_upload.zip
 	@zip -rq arxiv_upload.zip arxiv_upload/*
 	@echo "Folder arxiv_upload created and zip file arxiv_upload.zip"
+
+
+#http://matt.might.net/articles/shell-scripts-for-passive-voice-weasel-words-duplicates/
+check_dups:
+	@for srcfile in $(ALLTEXFILES); do\
+		echo '\033[0;36mChecking for duplicate words in \033[0m'$$srcfile  ; \
+		latexpand --empty-comments --keep-includes $$srcfile > _$$srcfile 2>/dev/null;\
+		check_dups.pl _$$srcfile; \
+		rm _$$srcfile;\
+	done
+
+#http://matt.might.net/articles/shell-scripts-for-passive-voice-weasel-words-duplicates/
+check_weasel:
+	@for srcfile in $(ALLTEXFILES); do\
+		echo '\033[0;36mChecking for weasel words in \033[0m'$$srcfile  ; \
+		latexpand --empty-comments --keep-includes $$srcfile > _$$srcfile 2>/dev/null;\
+		check_weasel.sh _$$srcfile; \
+		rm _$$srcfile;\
+	done
+
+#http://matt.might.net/articles/shell-scripts-for-passive-voice-weasel-words-duplicates/
+check_passive:
+	@for srcfile in $(ALLTEXFILES); do\
+		echo '\033[0;36mChecking for passive voice in \033[0m'$$srcfile  ; \
+		latexpand --empty-comments --keep-includes $$srcfile > _$$srcfile 2>/dev/null;\
+		check_passive.sh _$$srcfile; \
+		rm _$$srcfile;\
+	done
+
+check_all: check check_dups check_weasel check_passive
+
 
